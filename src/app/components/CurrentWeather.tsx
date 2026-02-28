@@ -24,17 +24,19 @@ interface WeatherData {
   windSpeedUnit: string;
 }
 
-type FetchStatus = "idle" | "loading" | "success" | "error";
+type FetchStatus = "loading" | "success" | "error";
 
 // --- コンポーネント ---
 
 export default function CurrentWeather() {
   const [selectedCity, setSelectedCity] = useState<City>(CITIES[0]);
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [status, setStatus] = useState<FetchStatus>("idle");
+  const [status, setStatus] = useState<FetchStatus>("loading");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchWeather = async () => {
       setStatus("loading");
       setErrorMessage("");
@@ -45,7 +47,7 @@ export default function CurrentWeather() {
         `&current=temperature_2m,wind_speed_10m`;
 
       try {
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl, { signal: controller.signal });
 
         if (!res.ok) {
           throw new Error(`API エラー: ${res.status} ${res.statusText}`);
@@ -61,6 +63,7 @@ export default function CurrentWeather() {
         });
         setStatus("success");
       } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
         setErrorMessage(
           err instanceof Error ? err.message : "不明なエラーが発生しました"
         );
@@ -69,9 +72,11 @@ export default function CurrentWeather() {
     };
 
     fetchWeather();
+
+    return () => controller.abort();
   }, [selectedCity]);
 
-  const isLoading = status === "idle" || status === "loading";
+  const isLoading = status === "loading";
 
   return (
     <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 shadow-lg">

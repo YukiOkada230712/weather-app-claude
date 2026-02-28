@@ -18,7 +18,7 @@ export default function CitySelector({
   return (
     <div className="flex flex-wrap gap-2">
       {cities.map((city) => {
-        const isSelected = city.name === selectedCity.name;
+        const isSelected = city === selectedCity;
         return (
           <button
             key={city.name}
