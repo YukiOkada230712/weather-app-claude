@@ -12,7 +12,7 @@ export default function CityButton({
   isSelected = false,
   disabled = false,
   onClick,
-}: CityButtonProps) {
+}: CityButtonProps): JSX.Element {
   return (
     <button
       onClick={onClick}

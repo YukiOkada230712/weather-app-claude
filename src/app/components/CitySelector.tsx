@@ -1,6 +1,7 @@
 "use client";
 
 import { City } from "../types";
+import CityButton from "./atoms/CityButton";
 
 interface CitySelectorProps {
   cities: City[];
@@ -14,30 +15,18 @@ export default function CitySelector({
   selectedCity,
   onCityChange,
   disabled,
-}: CitySelectorProps) {
+}: CitySelectorProps): JSX.Element {
   return (
     <div className="flex flex-wrap gap-2">
-      {cities.map((city) => {
-        const isSelected = city === selectedCity;
-        return (
-          <button
-            key={city.name}
-            onClick={() => onCityChange(city)}
-            disabled={disabled}
-            aria-pressed={isSelected}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
-              focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-1 focus:ring-offset-transparent
-              disabled:cursor-not-allowed disabled:opacity-60
-              ${
-                isSelected
-                  ? "bg-white text-sky-600 shadow-md scale-105"
-                  : "bg-white/20 text-white hover:bg-white/30"
-              }`}
-          >
-            {city.name}
-          </button>
-        );
-      })}
+      {cities.map((city) => (
+        <CityButton
+          key={city.name}
+          cityName={city.name}
+          isSelected={city === selectedCity}
+          disabled={disabled}
+          onClick={() => onCityChange(city)}
+        />
+      ))}
     </div>
   );
 }
